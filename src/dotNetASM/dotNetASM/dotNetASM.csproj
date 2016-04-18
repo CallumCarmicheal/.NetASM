@@ -47,9 +47,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Engine\AssemblyEngine.cs" />
+    <Compile Include="Engine\AssemblyError.cs" />
     <Compile Include="Engine\AssemblyParser.cs" />
-    <Compile Include="Engine\Commands.cs" />
+    <Compile Include="Engine\RandomUtil.cs" />
     <Compile Include="Engine\Registers.cs" />
+    <Compile Include="Forms\DebuggerForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\DebuggerForm.Designer.cs">
+      <DependentUpon>DebuggerForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\TestGUI.cs">
       <SubType>Form</SubType>
     </Compile>

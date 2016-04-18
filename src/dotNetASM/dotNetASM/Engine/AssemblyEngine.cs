@@ -30,7 +30,7 @@ namespace dotNetASM.Engine {
         // Methods and Functions
         public void ParserLog(string Instruction, string Message, int Level = 0) {
             if (System.Diagnostics.Debugger.IsAttached)
-                System.Diagnostics.Debugger.Log(Level, Instruction, Message);
+                System.Diagnostics.Debugger.Log(Level, "PARSER", "[" + Instruction + "] - " + Message + "\n");
         }
         
         public void ResetRegisters() {
@@ -44,10 +44,12 @@ namespace dotNetASM.Engine {
         public void ThrowParseError(ASMERROR_TYPE TYPE, string STRLine, string Message, int Line, int ArgIndex) {
             // Now how am i gonna do this ...
             // Events maybe
+            this.ParserLog("ERROR", TYPE.ToString() + ": [" + STRLine + "]:" + Line + ":" + ArgIndex + " - " + Message);
         }
 
         public void DoneExecuting() {
             // Create event
+            this.ParserLog("DONE", "DONE ASSEMBLY");
         }
     }
 }

@@ -1,1 +1,9 @@
 G:\GitHub\.NetASM\src\dotNetASM\dotNetASM\bin\Debug\dotNetASM.exe.config
+G:\GitHub\.NetASM\src\dotNetASM\dotNetASM\bin\Debug\dotNetASM.exe
+G:\GitHub\.NetASM\src\dotNetASM\dotNetASM\bin\Debug\dotNetASM.pdb
+G:\GitHub\.NetASM\src\dotNetASM\dotNetASM\obj\Debug\dotNetASM.csprojResolveAssemblyReference.cache
+G:\GitHub\.NetASM\src\dotNetASM\dotNetASM\obj\Debug\dotNetASM.Forms.TestGUI.resources
+G:\GitHub\.NetASM\src\dotNetASM\dotNetASM\obj\Debug\dotNetASM.Properties.Resources.resources
+G:\GitHub\.NetASM\src\dotNetASM\dotNetASM\obj\Debug\dotNetASM.csproj.GenerateResource.Cache
+G:\GitHub\.NetASM\src\dotNetASM\dotNetASM\obj\Debug\dotNetASM.exe
+G:\GitHub\.NetASM\src\dotNetASM\dotNetASM\obj\Debug\dotNetASM.pdb

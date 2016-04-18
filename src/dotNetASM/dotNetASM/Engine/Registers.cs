@@ -119,7 +119,7 @@ namespace dotNetASM.Engine {
             // Create BV32 for the full 32bit Registers
             BitVector32 bits = new BitVector32(Value);
 
-            if (len == 2) {
+            if (len == 3) {
                 // DO THE 32Bit STUFF HERE
                 switch(Register) {
                 case "EAX":
@@ -154,7 +154,7 @@ namespace dotNetASM.Engine {
             // Expecting a 2-3 char string
             var len = Register.Length;
 
-            if (len == 2) {
+            if (len == 3) {
                 // DO THE 32Bit STUFF HERE
                 switch (Register) {
                 case "EAX":
@@ -189,7 +189,7 @@ namespace dotNetASM.Engine {
             var len = Register.Length;
 
             valid = true;
-            if (len == 2) {
+            if (len == 3) {
                 // DO THE 32Bit STUFF HERE
                 switch (Register) {
                 case "EAX":
@@ -223,7 +223,7 @@ namespace dotNetASM.Engine {
             bool useless = false;
             BitVector32 bits;
 
-            if (len == 2) {
+            if (len == 3) {
                 // DO THE 32Bit STUFF HERE
                 switch (Register) {
                 case "EAX":
@@ -274,14 +274,14 @@ namespace dotNetASM.Engine {
                 return;
             
             // HANDLE 32 BIT REGISTERS
-            if(len1 == 2) {
+            if(len1 == 3) {
                 bool exists = false;
                 var vec = getRegister(Register, ref exists);
 
                 if (exists)
                     Data = vec.Data;
                 else return;
-            } if(len2 == 2) {
+            } if(len2 == 3) {
                 bool exists = false;
                 var vec = getRegister(Register, ref exists);
 
@@ -294,12 +294,23 @@ namespace dotNetASM.Engine {
             SetRegister(Register, output);
         }
 
+        public void CopyRegister(string destination, string value) {
+            bool valid = false;
+            BitVector32 val = getRegister(value, ref valid);
+            if (!valid)
+                return;
+
+            SetRegister(destination, val);
+        }
+
         public bool isRegister(string str) {
             string[] array;
             array = new string[] {
                 "EAX",      "EBX",                "ECX",      "EDX",                "ESI",      "EDI",                "ESP",      "EBP"
             };
-            
+
+            if (str == null)
+                return false;
             return array.Contains(str.ToUpper());
         }
     }
