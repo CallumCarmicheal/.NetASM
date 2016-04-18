@@ -1,0 +1,1 @@
+G:\GitHub\.NetASM\src\dotNetASM\dotNetASM\bin\Debug\dotNetASM.exe.config
