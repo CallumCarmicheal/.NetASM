@@ -21,7 +21,6 @@ SkippedNameAtStart:
 	msg ESI, EDI  ; Display EDX as Message, EAX as Title
 	msg EDX, EAX  ; Display EDX as Message, EAX as Title
 	
-	
 	msg 'Message', 'Title'
 	
 	add EDX, EAX

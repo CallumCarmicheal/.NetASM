@@ -82,14 +82,14 @@ namespace dotNetASM.Engine {
             cmpValue = default(CMPResults);
             cmpValue.isValid = false;
             cmpValue.TTL = 2;
-
+            
             if (ScriptContainsDuplicateLabels(Script)) {
                 eng.ParserLog("SCRIPT", "Script contains multiple same labels!", 2);
                 Executing = false;
             }
 
             do {
-                if (CurrentLine + 1 >= Lines.Length) {
+                if (CurrentLine + 1 > Lines.Length) {
                     Executing = false;
                     continue;
                 }
@@ -141,7 +141,7 @@ namespace dotNetASM.Engine {
                         System.Globalization.NumberStyles.Integer) 
                         || operation[x].IsNumeric(System.Globalization.NumberStyles.Number))
 
-                        return;
+                        continue;
 
                     operation[x] = operation[x].ToUpper();
                 }
@@ -174,7 +174,8 @@ namespace dotNetASM.Engine {
                             int value = eng.getRegisters().getRegister(stackVal, ref tmpB).Data;
                             tmpStack = value;
                             eng.ParserLog(currentOperation, "Set stack value to Register[" + stackVal + "] = " + value);
-                        } else  if (!stackVal.IsNumeric()) {
+                        } else  if (!stackVal.IsNumeric() & !stackVal.StartsWith("0x")) {
+                            Executing = false;
                             eng.ThrowParseError(ASMERROR_TYPE.PARSE_ERROR, currentOperation, "PUSH expecting Int/Hex/Register, GOT " + stackVal, CurrentLine, 1);
                             break;
                         } else {
@@ -204,24 +205,21 @@ namespace dotNetASM.Engine {
                             int label = FindLabelLocation(Script, loc);
 
                             if (label != -1) {
-                                CurrentLine = label-1;
+                                CurrentLine = label - 1;
                                 eng.ParserLog(currentOperation, "Changing line to " + loc + "@" + label + "+1");
                             } else {
                                 Executing = false;
                                 eng.ThrowParseError(ASMERROR_TYPE.PARSE_ERROR, currentOperation, "JMP expecting Label, NONE FOUND", CurrentLine, 1);
                                 break;
                             }
-                        } else if (loc.IsNumeric()) {
+                        } else if (loc.IsNumeric() || loc.StartsWith("0x")) {
                             // File Location, Line EG. 5
                             // Set tot he name loction because the current line is incremented
                             CurrentLine = (int)new System.ComponentModel.Int32Converter().ConvertFromString(loc) - 2; // Evaluated as 4 -2 = 3 (Line 4)  (-2 because Index at 0 and 1 is added at the end of the parse)
                             eng.ParserLog(currentOperation, "Changing line to " + CurrentLine);
-                        } else if (loc.StartsWith("0x")) {
-                            // Binary File Location (COMPILED ONLY) EG. 0x3F
-                            // IGNORED FOR NOW
-                            eng.ParserLog(currentOperation, "Ignoring hex jmp (BINARY JUMP)");
-                        }
-                        break;
+                        } else {
+                            // Ignored for now but will whine later
+                        } break;
 
                     case "CMP":
                         string arg = operation[1];
@@ -279,10 +277,7 @@ namespace dotNetASM.Engine {
 
                         if (v.Length == 3)
                             v[1] = v[2].Trim();
-
-                        Registers reg = eng.getRegisters(); // Easier to debug
                         
-
                         if (eng.getRegisters().isRegister(v[2])) {
                             // mov EAX, EDX
                             // [0] EAX
@@ -350,6 +345,120 @@ namespace dotNetASM.Engine {
                         else eng.ParserLog(currentOperation, string.Format("Added Register[{0}]={1} to Register[{2}] : New value = {3}", v_[1], valueToAdd, v_[0], newvalue));
                         break;
 
+                    case "INC":
+                        // EXPECTS 1 ARGUMENT
+                        // inc REGISTER
+                        // inc [VARIABLE] (TODO)
+
+                        if(operation.Length != 2) {
+                            Executing = false;
+                            eng.ThrowParseError(ASMERROR_TYPE.PARSE_ERROR, currentOperation, "INC expecting 1 parameter, GOT " + operation.Length, CurrentLine, 1);
+                            break;
+                        }
+
+                        // Check register
+                        string reg = operation[1];
+                        if(!eng.getRegisters().isRegister(reg)) {
+                            Executing = false;
+                            eng.ThrowParseError(ASMERROR_TYPE.PARSE_ERROR, currentOperation, "INC expecting a register, GOT " + reg, CurrentLine, 1);
+                            break;
+                        }
+
+                        eng.getRegisters().AddToRegister(reg, 1);
+                        break;
+
+                    case "DEC":
+                        // EXPECTS 1 ARGUMENT
+                        // inc REGISTER
+                        // inc [VARIABLE] (TODO)
+
+                        if (operation.Length != 2) {
+                            Executing = false;
+                            eng.ThrowParseError(ASMERROR_TYPE.PARSE_ERROR, currentOperation, "DEC expecting 1 parameter, GOT " + operation.Length, CurrentLine, 1);
+                            break;
+                        }
+
+                        // Check register
+                        string ReG = operation[1];
+                        if (!eng.getRegisters().isRegister(ReG)) {
+                            Executing = false;
+                            eng.ThrowParseError(ASMERROR_TYPE.PARSE_ERROR, currentOperation, "DEC expecting a register, GOT " + ReG, CurrentLine, 1);
+                            break;
+                        }
+
+                        eng.getRegisters().SubRegister(ReG, 1);
+                        break;
+
+                    case "SUB":
+                        // SUB x, y
+                        // SUB ESI, EDX
+                        // SUB ESI, 3
+                        // SUB ESI, 0x3f
+
+                        arg__ = operation[1];
+                        if (operation.Length - 1 == 2)
+                            arg__ += "," + operation[2];
+                        arg__ = arg__.Replace(" ", "");
+
+                        v_ = arg__.Trim().Split(',');
+                        v_[0] = v_[0].Trim();
+                        v_[1] = v_[1].Trim();
+
+                        if (v_.Length == 3)
+                            v_[1] = v_[2].Trim();
+
+                        // ARG 0 HAS TO BE A REGISTER
+                        if (!eng.getRegisters().isRegister(v_[0])) {
+                            Executing = false;
+                            eng.ThrowParseError(ASMERROR_TYPE.PARSE_ERROR, currentOperation, "ADD expecting Register, GOT " + v_[0], CurrentLine, 1);
+                            break;
+                        }
+
+                        valueToAdd = 0;
+                        isRegister = eng.getRegisters().isRegister(v_[1]);
+
+                        if (!isRegister)
+                            valueToAdd = (int)new System.ComponentModel.Int32Converter().ConvertFromString(v_[1]);
+                        else valueToAdd = eng.getRegisters().getRegister(v_[1], ref tmpB).Data;
+
+                        // Add val to register
+                        eng.getRegisters().AddToRegister(v_[0], valueToAdd * -1);
+
+                        newvalue = eng.getRegisters().getRegister(v_[0], ref tmpB).Data;
+                        if (!isRegister)
+                            eng.ParserLog(currentOperation, string.Format("Added {1} to Register[{0}] : New Value = {2}", v_[0], valueToAdd, newvalue));
+                        else eng.ParserLog(currentOperation, string.Format("Added Register[{0}]={1} to Register[{2}] : New value = {3}", v_[1], valueToAdd, v_[0], newvalue));
+                        break;
+
+                    case "INT":
+                        // Custom commands
+                        // EXPECTING A INT, HEX INT OR REGISTER SO USUALLY ANYTHING
+
+                        var il = operation[1];
+
+                        bool
+                            flag_0 = (!il.StartsWith("0x") & !il.IsNumeric()),
+                            flag_1 = (il.IsNumeric() || il.StartsWith("0x"));
+
+                        if (flag_0) {
+                            // Check for register
+                            if(eng.getRegisters().isRegister(il)) {
+                                CIEvent ci = new CIEvent(eng.getRegisters().getRegister(il, ref tmpB));
+                                eng.ThowICEvent(ci);
+                            } else {
+                                // Whine 
+                            }
+                        } else if (flag_1) {
+                            int li = (int)new System.ComponentModel.Int32Converter().ConvertFromString(il); ;
+
+                            CIEvent ci = new CIEvent(li);
+                            eng.ThowICEvent(ci);
+                        } else {
+                            // Ignored for now but will whine later
+                            // I want to try something
+                            this.RunScript("MSG 'IGNORED'");
+                        }
+                        break;
 
                     /* FAKE COMMANDS | NOT REAL ASM COMMANDS BUT ADDED BECAUSE IT MAKES MY LIFE EASIER */
 
@@ -371,17 +480,24 @@ namespace dotNetASM.Engine {
                         bool isBypass = false;
 
                         if (operation.Length != 4) {
-                            _arg_ = operation[1];
-                            if (operation.Length - 1 == 2)
-                                _arg_ += "," + operation[2];
-                            _arg_ = _arg_.Replace(", ", ",");
+                            if (operation.Length == 2) {
+                                val0 = operation[1].Replace("\"", "");
+                            } else {
+                                _arg_ = operation[1];
+                                if (operation.Length - 1 == 2)
+                                    _arg_ += "," + operation[2];
+                                _arg_ = _arg_.Replace(", ", ",");
 
-                            _v = _arg_.Trim().Split(',');
-                            _v[0] = _v[0].Trim();
-                            _v[1] = _v[1].Trim();
+                                _v = _arg_.Trim().Split(',');
+                                _v[0] = _v[0].Trim();
+                                _v[1] = _v[1].Trim();
 
-                            if (_v.Length == 3)
-                                _v[1] = _v[2].Trim();
+                                if (_v.Length == 3)
+                                    _v[1] = _v[2].Trim();
+
+                                val1 = _v[0].Replace("\"", "");
+                                val0 = _v[1].Replace("\"", "");
+                            }
                         } else {
                             val1 = operation[1].Replace("\"", "");
                             val0 = operation[3].Replace("\"", "");
@@ -389,15 +505,13 @@ namespace dotNetASM.Engine {
                             isBypass = true;
                         }
 
-                        if (eng.getRegisters().isRegister(_v[0]))
-                            val0 = "" + eng.getRegisters().getRegister(_v[0], ref tmpB).Data;
+                        if (eng.getRegisters().isRegister(val0))
+                            val0 = "" + eng.getRegisters().getRegister(val0, ref tmpB).Data;
 
                         if (operation.Length - 1 == 2 || isBypass) {
                             if(!isBypass)
-                                if (eng.getRegisters().isRegister(_v[1]))
-                                    val1 = "" + eng.getRegisters().getRegister(_v[1], ref tmpB).Data;
-                                else
-                                    val1 = operation[2];
+                                if (eng.getRegisters().isRegister(val1))
+                                    val1 = "" + eng.getRegisters().getRegister(val1, ref tmpB).Data;
 
                             System.Windows.Forms.MessageBox.Show(val0, val1);
                         } else {
@@ -419,7 +533,7 @@ namespace dotNetASM.Engine {
                     cmpValue.isValid = false;
 
                 CurrentLine++;
-                if (CurrentLine + 1 >= Lines.Length) // wrong operator.....
+                if (CurrentLine + 1 > Lines.Length)
                     Executing = false;
             } while (Executing);
 

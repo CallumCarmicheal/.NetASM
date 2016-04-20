@@ -1,10 +1,17 @@
+# About the Test
+Test a mix of instructions that was initially added
+
 # Status
 SUCCESS
+
 
 # Errors
 NONE/FIXED
 
-# Result
+# Output
+```TBC```
+
+# Debug Log Result
 ```[Exec] - jmp GotoOperations @ 1 -  Started
 [jmp GotoOperations] - Changing line to GotoOperations@32+1
 [Exec] - jmp 4 @ 32 -  Started
@@ -34,7 +41,9 @@ NONE/FIXED
 [Exec] - msg EDX, EAX @ 27 -  Started
 [Exec] - jmp EndApplication @ 29 -  Started
 [jmp EndApplication] - Changing line to EndApplication@39+1
-[DONE] - DONE ASSEMBLY```
+[Exec] - END @ 39 -  Started
+[DONE] - DONE ASSEMBLY
+```
 
 # Notes
 Worked flawlessly when i fixed it all

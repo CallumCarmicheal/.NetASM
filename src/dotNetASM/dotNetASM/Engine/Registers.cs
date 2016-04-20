@@ -9,10 +9,7 @@ namespace dotNetASM.Engine {
     class Registers {
         AssemblyEngine engine;
 
-        /*
-
-
-           Notes for my Dumb self!
+        /* Notes for my Dumb self!
                {} = Register
                E{}X is the full 32-bit value
                {}X is the lower 16-bits
@@ -292,6 +289,19 @@ namespace dotNetASM.Engine {
 
             output = new BitVector32(Data);
             SetRegister(Register, output);
+        }
+
+
+        public void SubRegister(string Register, int Value) {
+            Value *= -1;
+            AddToRegister(Register, Value);
+        }
+
+
+        public void SubRegisters(string Register, int Register2) {
+            bool useless = false;
+            var register = getRegister(Register, ref useless);
+            AddToRegister(Register, register.Data * -1);
         }
 
         public void CopyRegister(string destination, string value) {

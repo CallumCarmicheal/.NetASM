@@ -1,16 +1,30 @@
 # Added
 
 32 Bit Registers:
-	EAX
+```	EAX
 	EBX
 	ECX
 	EDX
 	ESI
 	EDI
 	ESP
-	EBP
+	EBP```
 
-32 Bit Registers:
-	None T_T
+16 Bit Registers:
+```None T_T```
 
 # To be Added
+```
+AX
+AH 
+AL 
+BX 
+BH 
+BL 
+CX 
+CH 
+CL 
+DX 
+DH 
+DL
+```

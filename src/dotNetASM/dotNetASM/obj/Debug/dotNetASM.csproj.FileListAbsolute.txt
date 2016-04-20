@@ -7,3 +7,6 @@ G:\GitHub\.NetASM\src\dotNetASM\dotNetASM\obj\Debug\dotNetASM.Properties.Resourc
 G:\GitHub\.NetASM\src\dotNetASM\dotNetASM\obj\Debug\dotNetASM.csproj.GenerateResource.Cache
 G:\GitHub\.NetASM\src\dotNetASM\dotNetASM\obj\Debug\dotNetASM.exe
 G:\GitHub\.NetASM\src\dotNetASM\dotNetASM\obj\Debug\dotNetASM.pdb
+G:\GitHub\.NetASM\src\dotNetASM\dotNetASM\bin\Debug\ScintillaNET.dll
+G:\GitHub\.NetASM\src\dotNetASM\dotNetASM\bin\Debug\ScintillaNET.pdb
+G:\GitHub\.NetASM\src\dotNetASM\dotNetASM\bin\Debug\ScintillaNET.xml
